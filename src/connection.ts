@@ -1,4 +1,5 @@
 import { InstanceStatus } from '@companion-module/base'
+import WebSocket from 'ws'
 import { EventSyncState, ServerMessage, StateUpdateMessage } from './state.js'
 
 type StateCallback = (state: EventSyncState) => void
@@ -21,36 +22,39 @@ export class EventSyncConnection {
 		this.onStatus(InstanceStatus.Connecting)
 
 		const url = `ws://${this.host}:${this.port}/control`
+		console.log(`EventSync: Connecting to ${url}`)
 
 		try {
 			this.ws = new WebSocket(url)
 
-			this.ws.onopen = () => {
+			this.ws.on('open', () => {
+				console.log('EventSync: WebSocket connected, sending authentication')
 				// Send authentication
 				this.send({ type: 'authenticate', passcode: this.passcode })
 				// Start ping interval
 				this.startPing()
-			}
+			})
 
-			this.ws.onmessage = (event: MessageEvent) => {
+			this.ws.on('message', (data: WebSocket.RawData) => {
 				try {
-					const message = JSON.parse(String(event.data)) as ServerMessage
+					const message = JSON.parse(data.toString()) as ServerMessage
 					this.handleMessage(message)
 				} catch (e) {
 					console.error('Failed to parse message:', e)
 				}
-			}
+			})
 
-			this.ws.onclose = () => {
+			this.ws.on('close', () => {
+				console.log('EventSync: WebSocket closed')
 				this.onStatus(InstanceStatus.Disconnected)
 				this.stopPing()
 				this.scheduleReconnect()
-			}
+			})
 
-			this.ws.onerror = (err) => {
-				console.error('WebSocket error:', err)
+			this.ws.on('error', (err: Error) => {
+				console.error('EventSync: WebSocket error:', err.message)
 				this.onStatus(InstanceStatus.ConnectionFailure)
-			}
+			})
 		} catch (err) {
 			console.error('Failed to create WebSocket:', err)
 			this.onStatus(InstanceStatus.ConnectionFailure)
