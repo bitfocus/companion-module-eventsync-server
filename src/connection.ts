@@ -85,10 +85,12 @@ export class EventSyncConnection {
 				this.disconnect()
 				break
 
-			case 'stateUpdate':
-				const state = EventSyncState.fromJSON(message as StateUpdateMessage)
+			case 'stateUpdate': {
+				const stateMessage = message as unknown as StateUpdateMessage
+				const state = EventSyncState.fromJSON(stateMessage)
 				this.onState(state)
 				break
+			}
 
 			case 'pong':
 				// Keep-alive response received
