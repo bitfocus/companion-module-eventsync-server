@@ -1,0 +1,43 @@
+{
+  "name": "companion-module-eventsync",
+  "version": "1.0.0",
+  "main": "dist/main.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eventsync/companion-module-eventsync.git"
+  },
+  "keywords": [
+    "bitfocus",
+    "companion",
+    "eventsync",
+    "show-control",
+    "osc"
+  ],
+  "author": "EventSync",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eventsync/companion-module-eventsync/issues"
+  },
+  "homepage": "https://eventsync.co.uk",
+  "dependencies": {
+    "@companion-module/base": "~1.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "~5.4.0"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "printWidth": 120,
+    "useTabs": true,
+    "tabWidth": 4
+  }
+}

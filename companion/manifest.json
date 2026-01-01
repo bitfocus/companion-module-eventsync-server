@@ -1,0 +1,25 @@
+{
+  "id": "eventsync",
+  "name": "eventsync",
+  "shortname": "EventSync",
+  "description": "Control EventSync from Bitfocus Companion. Trigger cues, manage modules, and monitor show status from Stream Deck.",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": "git+https://github.com/eventsync/companion-module-eventsync.git",
+  "bugs": "https://github.com/eventsync/companion-module-eventsync/issues",
+  "maintainers": [
+    {
+      "name": "EventSync",
+      "email": "support@eventsync.co.uk"
+    }
+  ],
+  "legacyIds": [],
+  "runtime": {
+    "type": "node18",
+    "api": "nodejs-ipc",
+    "apiVersion": "0.0.0"
+  },
+  "manufacturer": "EventSync",
+  "products": ["EventSync Server"],
+  "keywords": ["show-control", "cue", "osc", "event"]
+}
