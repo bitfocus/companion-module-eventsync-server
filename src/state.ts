@@ -1,7 +1,11 @@
 export interface StackInfo {
 	name: string
-	currentCue: string | null
-	nextCue: string | null
+	currentCue: string | null      // Last executed / running cue
+	currentCueIndex: number | null // 1-indexed
+	standbyCue: string | null      // Next cue to execute on GO
+	standbyIndex: number | null    // 1-indexed
+	nextCue: string | null         // Cue after standby
+	nextCueIndex: number | null    // 1-indexed
 	timeRemaining: number | null
 	playbackState: 'playing' | 'stopped' | 'paused'
 	cues: CueInfo[]
@@ -43,7 +47,7 @@ export class EventSyncState {
 		state.serverStatus = json.system?.serverStatus || 'offline'
 		state.transportMode = json.transport?.mode || 'following'
 		state.transportTarget = json.transport?.target || null
-		state.focusedStack = state.transportTarget
+		state.focusedStack = json.transport?.focusedStack || null
 
 		return state
 	}
@@ -97,6 +101,7 @@ export interface StateUpdateMessage {
 	transport: {
 		mode: 'locked' | 'following'
 		target: string | null
+		focusedStack: string | null
 	}
 }
 

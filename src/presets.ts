@@ -169,15 +169,28 @@ export function getPresets(): CompanionPresetDefinitions {
 		},
 
 		// ========== Cue Info ==========
-		info_current: {
+		info_standby_cue: {
 			type: 'button',
 			category: 'Cue Info',
-			name: 'Current Cue',
+			name: 'Standby Cue',
 			style: {
-				text: 'CURRENT\\n$(eventsync:focused_stack)',
+				text: 'STANDBY\\n$(eventsync:focus_standby_cue)',
+				size: '14',
+				color: combineRgb(0, 0, 0),
+				bgcolor: combineRgb(255, 165, 0),
+			},
+			steps: [],
+			feedbacks: [],
+		},
+		info_current_cue: {
+			type: 'button',
+			category: 'Cue Info',
+			name: 'Running Cue',
+			style: {
+				text: 'RUNNING\\n$(eventsync:focus_current_cue)',
 				size: '14',
 				color: combineRgb(255, 255, 255),
-				bgcolor: combineRgb(34, 34, 34),
+				bgcolor: combineRgb(0, 136, 0),
 			},
 			steps: [],
 			feedbacks: [],
@@ -187,8 +200,8 @@ export function getPresets(): CompanionPresetDefinitions {
 			category: 'Cue Info',
 			name: 'Time Remaining',
 			style: {
-				text: 'TIME\\n--:--',
-				size: '14',
+				text: 'TIME\\n$(eventsync:focus_time_remaining)',
+				size: '18',
 				color: combineRgb(255, 255, 255),
 				bgcolor: combineRgb(34, 34, 34),
 			},

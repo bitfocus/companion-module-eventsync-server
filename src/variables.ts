@@ -9,6 +9,16 @@ export function getVariables(state: EventSyncState): CompanionVariableDefinition
 		{ variableId: 'focused_stack', name: 'Focused Stack' },
 		{ variableId: 'transport_mode', name: 'Transport Mode' },
 
+		// Focus (currently focused/locked stack)
+		{ variableId: 'focus_current_cue', name: 'Focus: Running Cue' },
+		{ variableId: 'focus_current_cue_index', name: 'Focus: Running Cue Index' },
+		{ variableId: 'focus_standby_cue', name: 'Focus: Standby Cue' },
+		{ variableId: 'focus_standby_index', name: 'Focus: Standby Index' },
+		{ variableId: 'focus_next_cue', name: 'Focus: Next Cue' },
+		{ variableId: 'focus_time_remaining', name: 'Focus: Time Remaining' },
+		{ variableId: 'focus_time_remaining_s', name: 'Focus: Time Remaining (seconds)' },
+		{ variableId: 'focus_playback_state', name: 'Focus: Playback State' },
+
 		// System
 		{ variableId: 'licenses_used', name: 'Licenses Used' },
 		{ variableId: 'licenses_available', name: 'Licenses Available' },
@@ -22,7 +32,10 @@ export function getVariables(state: EventSyncState): CompanionVariableDefinition
 	for (const stack of state.stacks) {
 		const prefix = `stack_${sanitizeVariableName(stack.name)}`
 		variables.push(
-			{ variableId: `${prefix}_current_cue`, name: `${stack.name} Current Cue` },
+			{ variableId: `${prefix}_current_cue`, name: `${stack.name} Running Cue` },
+			{ variableId: `${prefix}_current_cue_index`, name: `${stack.name} Running Cue Index` },
+			{ variableId: `${prefix}_standby_cue`, name: `${stack.name} Standby Cue` },
+			{ variableId: `${prefix}_standby_index`, name: `${stack.name} Standby Index` },
 			{ variableId: `${prefix}_next_cue`, name: `${stack.name} Next Cue` },
 			{ variableId: `${prefix}_time_remaining`, name: `${stack.name} Time Remaining` },
 			{ variableId: `${prefix}_time_remaining_s`, name: `${stack.name} Time Remaining (seconds)` },
@@ -34,11 +47,25 @@ export function getVariables(state: EventSyncState): CompanionVariableDefinition
 }
 
 export function updateVariables(instance: InstanceBase<EventSyncConfig>, state: EventSyncState): void {
+	// Get the focused stack (locked target takes priority, then focused, then first stack)
+	const focusedStackName = state.transportTarget || state.focusedStack || state.stacks[0]?.name || null
+	const focusedStack = focusedStackName ? state.stacks.find((s) => s.name === focusedStackName) : null
+
 	const values: { [key: string]: string | number | undefined } = {
 		// Global
 		playback_state: getGlobalPlaybackState(state),
-		focused_stack: state.focusedStack || '',
+		focused_stack: focusedStackName || '',
 		transport_mode: state.transportMode === 'locked' ? `locked: ${state.transportTarget}` : 'following',
+
+		// Focus (currently focused/locked stack)
+		focus_current_cue: focusedStack?.currentCue || '',
+		focus_current_cue_index: focusedStack?.currentCueIndex || 0,
+		focus_standby_cue: focusedStack?.standbyCue || '',
+		focus_standby_index: focusedStack?.standbyIndex || 0,
+		focus_next_cue: focusedStack?.nextCue || '',
+		focus_time_remaining: formatTime(focusedStack?.timeRemaining ?? null),
+		focus_time_remaining_s: focusedStack?.timeRemaining || 0,
+		focus_playback_state: focusedStack?.playbackState || 'stopped',
 
 		// System
 		licenses_used: state.licensesUsed,
@@ -53,6 +80,9 @@ export function updateVariables(instance: InstanceBase<EventSyncConfig>, state: 
 	for (const stack of state.stacks) {
 		const prefix = `stack_${sanitizeVariableName(stack.name)}`
 		values[`${prefix}_current_cue`] = stack.currentCue || ''
+		values[`${prefix}_current_cue_index`] = stack.currentCueIndex || 0
+		values[`${prefix}_standby_cue`] = stack.standbyCue || ''
+		values[`${prefix}_standby_index`] = stack.standbyIndex || 0
 		values[`${prefix}_next_cue`] = stack.nextCue || ''
 		values[`${prefix}_time_remaining`] = formatTime(stack.timeRemaining)
 		values[`${prefix}_time_remaining_s`] = stack.timeRemaining || 0
