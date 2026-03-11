@@ -15,8 +15,10 @@ export function getVariables(state: EventSyncState): CompanionVariableDefinition
 		{ variableId: 'focus_standby_cue', name: 'Focus: Standby Cue' },
 		{ variableId: 'focus_standby_index', name: 'Focus: Standby Index' },
 		{ variableId: 'focus_next_cue', name: 'Focus: Next Cue' },
-		{ variableId: 'focus_time_remaining', name: 'Focus: Time Remaining' },
-		{ variableId: 'focus_time_remaining_s', name: 'Focus: Time Remaining (seconds)' },
+		{ variableId: 'focus_video_time', name: 'Focus: Video Time Remaining' },
+		{ variableId: 'focus_video_time_s', name: 'Focus: Video Time Remaining (seconds)' },
+		{ variableId: 'focus_wait_time', name: 'Focus: Wait Time Remaining' },
+		{ variableId: 'focus_wait_time_s', name: 'Focus: Wait Time Remaining (seconds)' },
 		{ variableId: 'focus_playback_state', name: 'Focus: Playback State' },
 
 		// System
@@ -37,8 +39,10 @@ export function getVariables(state: EventSyncState): CompanionVariableDefinition
 			{ variableId: `${prefix}_standby_cue`, name: `${stack.name} Standby Cue` },
 			{ variableId: `${prefix}_standby_index`, name: `${stack.name} Standby Index` },
 			{ variableId: `${prefix}_next_cue`, name: `${stack.name} Next Cue` },
-			{ variableId: `${prefix}_time_remaining`, name: `${stack.name} Time Remaining` },
-			{ variableId: `${prefix}_time_remaining_s`, name: `${stack.name} Time Remaining (seconds)` },
+			{ variableId: `${prefix}_video_time`, name: `${stack.name} Video Time Remaining` },
+			{ variableId: `${prefix}_video_time_s`, name: `${stack.name} Video Time Remaining (seconds)` },
+			{ variableId: `${prefix}_wait_time`, name: `${stack.name} Wait Time Remaining` },
+			{ variableId: `${prefix}_wait_time_s`, name: `${stack.name} Wait Time Remaining (seconds)` },
 			{ variableId: `${prefix}_playback_state`, name: `${stack.name} Playback State` }
 		)
 	}
@@ -63,8 +67,10 @@ export function updateVariables(instance: InstanceBase<EventSyncConfig>, state: 
 		focus_standby_cue: focusedStack?.standbyCue || '',
 		focus_standby_index: focusedStack?.standbyIndex || 0,
 		focus_next_cue: focusedStack?.nextCue || '',
-		focus_time_remaining: formatTime(focusedStack?.timeRemaining ?? null),
-		focus_time_remaining_s: focusedStack?.timeRemaining || 0,
+		focus_video_time: formatTime(focusedStack?.videoTimeRemaining ?? null),
+		focus_video_time_s: focusedStack?.videoTimeRemaining || 0,
+		focus_wait_time: formatTime(focusedStack?.waitTimeRemaining ?? null),
+		focus_wait_time_s: focusedStack?.waitTimeRemaining || 0,
 		focus_playback_state: focusedStack?.playbackState || 'stopped',
 
 		// System
@@ -84,8 +90,10 @@ export function updateVariables(instance: InstanceBase<EventSyncConfig>, state: 
 		values[`${prefix}_standby_cue`] = stack.standbyCue || ''
 		values[`${prefix}_standby_index`] = stack.standbyIndex || 0
 		values[`${prefix}_next_cue`] = stack.nextCue || ''
-		values[`${prefix}_time_remaining`] = formatTime(stack.timeRemaining)
-		values[`${prefix}_time_remaining_s`] = stack.timeRemaining || 0
+		values[`${prefix}_video_time`] = formatTime(stack.videoTimeRemaining)
+		values[`${prefix}_video_time_s`] = stack.videoTimeRemaining || 0
+		values[`${prefix}_wait_time`] = formatTime(stack.waitTimeRemaining)
+		values[`${prefix}_wait_time_s`] = stack.waitTimeRemaining || 0
 		values[`${prefix}_playback_state`] = stack.playbackState
 	}
 
@@ -102,8 +110,8 @@ function getGlobalPlaybackState(state: EventSyncState): string {
 	return 'stopped'
 }
 
-function formatTime(seconds: number | null): string {
-	if (seconds === null) return '--:--'
+function formatTime(seconds: number | null | undefined): string {
+	if (seconds === null || seconds === undefined) return '--:--'
 
 	const mins = Math.floor(seconds / 60)
 	const secs = Math.floor(seconds % 60)

@@ -6,10 +6,60 @@ export function getFeedbacks(instance: EventSyncModule, state: EventSyncState): 
 	const stackChoices = state.getStackChoices()
 
 	return {
+		// ========== Focused Stack Feedbacks ==========
+		focus_playing: {
+			type: 'boolean',
+			name: 'Focused Cue Stack Playing',
+			description: 'True when the focused cue stack is playing',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 255, 0),
+				color: combineRgb(0, 0, 0),
+			},
+			options: [],
+			callback: () => {
+				const focusedName = state.transportTarget || state.focusedStack || state.stacks[0]?.name
+				const stack = focusedName ? state.stacks.find((s) => s.name === focusedName) : null
+				return stack?.playbackState === 'playing'
+			},
+		},
+
+		focus_stopped: {
+			type: 'boolean',
+			name: 'Focused Cue Stack Stopped',
+			description: 'True when the focused cue stack is stopped',
+			defaultStyle: {
+				bgcolor: combineRgb(255, 0, 0),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [],
+			callback: () => {
+				const focusedName = state.transportTarget || state.focusedStack || state.stacks[0]?.name
+				const stack = focusedName ? state.stacks.find((s) => s.name === focusedName) : null
+				return stack?.playbackState === 'stopped'
+			},
+		},
+
+		focus_paused: {
+			type: 'boolean',
+			name: 'Focused Cue Stack Paused',
+			description: 'True when the focused cue stack is paused',
+			defaultStyle: {
+				bgcolor: combineRgb(255, 165, 0),
+				color: combineRgb(0, 0, 0),
+			},
+			options: [],
+			callback: () => {
+				const focusedName = state.transportTarget || state.focusedStack || state.stacks[0]?.name
+				const stack = focusedName ? state.stacks.find((s) => s.name === focusedName) : null
+				return stack?.playbackState === 'paused'
+			},
+		},
+
+		// ========== Global Feedbacks ==========
 		playback_playing: {
 			type: 'boolean',
-			name: 'Playback Playing',
-			description: 'True when any stack is playing',
+			name: 'Any Cue Stack Playing',
+			description: 'True when any cue stack is playing',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 255, 0),
 				color: combineRgb(0, 0, 0),
@@ -22,8 +72,8 @@ export function getFeedbacks(instance: EventSyncModule, state: EventSyncState): 
 
 		playback_stopped: {
 			type: 'boolean',
-			name: 'Playback Stopped',
-			description: 'True when all stacks are stopped',
+			name: 'All Cue Stacks Stopped',
+			description: 'True when all cue stacks are stopped',
 			defaultStyle: {
 				bgcolor: combineRgb(255, 0, 0),
 				color: combineRgb(255, 255, 255),
@@ -36,8 +86,8 @@ export function getFeedbacks(instance: EventSyncModule, state: EventSyncState): 
 
 		playback_paused: {
 			type: 'boolean',
-			name: 'Playback Paused',
-			description: 'True when any stack is paused',
+			name: 'Any Cue Stack Paused',
+			description: 'True when any cue stack is paused',
 			defaultStyle: {
 				bgcolor: combineRgb(255, 165, 0),
 				color: combineRgb(0, 0, 0),
@@ -48,24 +98,11 @@ export function getFeedbacks(instance: EventSyncModule, state: EventSyncState): 
 			},
 		},
 
-		transport_locked: {
-			type: 'boolean',
-			name: 'Transport Locked',
-			description: 'True when transport is locked to a stack',
-			defaultStyle: {
-				bgcolor: combineRgb(255, 136, 0),
-				color: combineRgb(255, 255, 255),
-			},
-			options: [],
-			callback: () => {
-				return state.transportMode === 'locked'
-			},
-		},
-
+		// ========== Per-Stack Feedbacks ==========
 		stack_focused: {
 			type: 'boolean',
-			name: 'Stack Focused',
-			description: 'True when specified stack is the focused stack',
+			name: 'Cue Stack Focused',
+			description: 'True when specified cue stack is the focused stack',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 255, 0),
 				color: combineRgb(0, 0, 0),
@@ -74,7 +111,7 @@ export function getFeedbacks(instance: EventSyncModule, state: EventSyncState): 
 				{
 					type: 'dropdown',
 					id: 'stack',
-					label: 'Stack',
+					label: 'Cue Stack',
 					choices: stackChoices,
 					default: stackChoices[0]?.id || '',
 				},
@@ -86,8 +123,8 @@ export function getFeedbacks(instance: EventSyncModule, state: EventSyncState): 
 
 		stack_playing: {
 			type: 'boolean',
-			name: 'Stack Playing',
-			description: 'True when specified stack is playing',
+			name: 'Cue Stack Playing',
+			description: 'True when specified cue stack is playing',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 255, 0),
 				color: combineRgb(0, 0, 0),
@@ -96,7 +133,7 @@ export function getFeedbacks(instance: EventSyncModule, state: EventSyncState): 
 				{
 					type: 'dropdown',
 					id: 'stack',
-					label: 'Stack',
+					label: 'Cue Stack',
 					choices: stackChoices,
 					default: stackChoices[0]?.id || '',
 				},
@@ -109,8 +146,8 @@ export function getFeedbacks(instance: EventSyncModule, state: EventSyncState): 
 
 		stack_stopped: {
 			type: 'boolean',
-			name: 'Stack Stopped',
-			description: 'True when specified stack is stopped',
+			name: 'Cue Stack Stopped',
+			description: 'True when specified cue stack is stopped',
 			defaultStyle: {
 				bgcolor: combineRgb(255, 0, 0),
 				color: combineRgb(255, 255, 255),
@@ -119,7 +156,7 @@ export function getFeedbacks(instance: EventSyncModule, state: EventSyncState): 
 				{
 					type: 'dropdown',
 					id: 'stack',
-					label: 'Stack',
+					label: 'Cue Stack',
 					choices: stackChoices,
 					default: stackChoices[0]?.id || '',
 				},
@@ -130,6 +167,45 @@ export function getFeedbacks(instance: EventSyncModule, state: EventSyncState): 
 			},
 		},
 
+		stack_paused: {
+			type: 'boolean',
+			name: 'Cue Stack Paused',
+			description: 'True when specified cue stack is paused',
+			defaultStyle: {
+				bgcolor: combineRgb(255, 165, 0),
+				color: combineRgb(0, 0, 0),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					id: 'stack',
+					label: 'Cue Stack',
+					choices: stackChoices,
+					default: stackChoices[0]?.id || '',
+				},
+			],
+			callback: (feedback) => {
+				const stack = state.stacks.find((s) => s.name === feedback.options.stack)
+				return stack?.playbackState === 'paused'
+			},
+		},
+
+		// ========== Cue Stack Focus Lock ==========
+		transport_locked: {
+			type: 'boolean',
+			name: 'Cue Stack Focus Locked',
+			description: 'True when focus is locked to a cue stack',
+			defaultStyle: {
+				bgcolor: combineRgb(255, 136, 0),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [],
+			callback: () => {
+				return state.transportMode === 'locked'
+			},
+		},
+
+		// ========== System ==========
 		server_connected: {
 			type: 'boolean',
 			name: 'Server Connected',
@@ -140,7 +216,7 @@ export function getFeedbacks(instance: EventSyncModule, state: EventSyncState): 
 			},
 			options: [],
 			callback: () => {
-				return state.serverStatus === 'online'
+				return instance.getIsConnected()
 			},
 		},
 

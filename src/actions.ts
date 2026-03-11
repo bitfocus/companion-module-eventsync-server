@@ -58,13 +58,13 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 			},
 		},
 		global_fire: {
-			name: 'Global Fire Position',
-			description: 'Fire cue at position on all stacks',
+			name: 'Global Go Cue Number',
+			description: 'Go to cue number on all stacks',
 			options: [
 				{
 					type: 'number',
 					id: 'position',
-					label: 'Cue Position',
+					label: 'Cue Number',
 					default: 1,
 					min: 1,
 					max: 999,
@@ -111,10 +111,10 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 			},
 		},
 
-		// ========== Stack Cue Control ==========
+		// ========== Cue Stack Control ==========
 		stack_go: {
-			name: 'Stack Go',
-			description: 'Fire next cue on specific stack',
+			name: 'Cue Stack Go',
+			description: 'Fire next cue on specific cue stack',
 			options: [
 				{
 					type: 'dropdown',
@@ -129,8 +129,8 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 			},
 		},
 		stack_stop: {
-			name: 'Stack Stop',
-			description: 'Stop playback on specific stack',
+			name: 'Cue Stack Stop',
+			description: 'Stop playback on specific cue stack',
 			options: [
 				{
 					type: 'dropdown',
@@ -145,8 +145,8 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 			},
 		},
 		stack_pause: {
-			name: 'Stack Pause',
-			description: 'Pause playback on specific stack',
+			name: 'Cue Stack Pause',
+			description: 'Pause playback on specific cue stack',
 			options: [
 				{
 					type: 'dropdown',
@@ -161,8 +161,8 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 			},
 		},
 		stack_resume: {
-			name: 'Stack Resume',
-			description: 'Resume playback on specific stack',
+			name: 'Cue Stack Resume',
+			description: 'Resume playback on specific cue stack',
 			options: [
 				{
 					type: 'dropdown',
@@ -177,8 +177,8 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 			},
 		},
 		stack_next: {
-			name: 'Stack Next',
-			description: 'Select next cue on specific stack',
+			name: 'Cue Stack Next',
+			description: 'Select next cue on specific cue stack',
 			options: [
 				{
 					type: 'dropdown',
@@ -193,8 +193,8 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 			},
 		},
 		stack_previous: {
-			name: 'Stack Previous',
-			description: 'Select previous cue on specific stack',
+			name: 'Cue Stack Previous',
+			description: 'Select previous cue on specific cue stack',
 			options: [
 				{
 					type: 'dropdown',
@@ -209,8 +209,8 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 			},
 		},
 		stack_fire: {
-			name: 'Stack Fire Position',
-			description: 'Fire cue at position on specific stack',
+			name: 'Cue Stack Go Cue Number',
+			description: 'Go to cue number on specific cue stack',
 			options: [
 				{
 					type: 'dropdown',
@@ -222,7 +222,7 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 				{
 					type: 'number',
 					id: 'position',
-					label: 'Cue Position',
+					label: 'Cue Number',
 					default: 1,
 					min: 1,
 					max: 999,
@@ -285,13 +285,13 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 			},
 		},
 		focus_fire: {
-			name: 'Focus Fire Position',
-			description: 'Fire cue at position on currently focused stack',
+			name: 'Focus Go Cue Number',
+			description: 'Go to cue number on currently focused stack',
 			options: [
 				{
 					type: 'number',
 					id: 'position',
-					label: 'Cue Position',
+					label: 'Cue Number',
 					default: 1,
 					min: 1,
 					max: 999,
@@ -303,10 +303,10 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 			},
 		},
 
-		// ========== Transport ==========
+		// ========== Cue Stack Focus Lock ==========
 		lock_transport: {
-			name: 'Lock Transport',
-			description: 'Lock transport controls to a specific stack',
+			name: 'Cue Stack Focus Lock',
+			description: 'Lock focus controls to a specific cue stack',
 			options: [
 				{
 					type: 'dropdown',
@@ -321,16 +321,16 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 			},
 		},
 		unlock_transport: {
-			name: 'Unlock Transport',
-			description: 'Unlock transport to follow focused stack',
+			name: 'Cue Stack Focus Unlock',
+			description: 'Unlock focus to follow selected cue stack',
 			options: [],
 			callback: async () => {
 				instance.getConnection()?.unlockTransport()
 			},
 		},
 		select_stack: {
-			name: 'Select Stack',
-			description: 'Change the focused stack',
+			name: 'Select Cue Stack',
+			description: 'Change the focused cue stack',
 			options: [
 				{
 					type: 'dropdown',
@@ -378,34 +378,7 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 				instance.getConnection()?.moduleDisable(String(action.options.module))
 			},
 		},
-		module_page: {
-			name: 'Module Page',
-			description: 'Switch module to specific page',
-			options: [
-				{
-					type: 'dropdown',
-					id: 'module',
-					label: 'Module',
-					choices: moduleChoices,
-					default: moduleChoices[0]?.id || '',
-				},
-				{
-					type: 'dropdown',
-					id: 'page',
-					label: 'Page',
-					choices: [
-						{ id: 'home', label: 'Home' },
-						{ id: 'results', label: 'Results' },
-					],
-					default: 'home',
-				},
-			],
-			callback: async (action: CompanionActionEvent) => {
-				instance.getConnection()?.modulePage(String(action.options.module), String(action.options.page))
-			},
-		},
-
-		// ========== System Settings ==========
+			// ========== System Settings ==========
 		set_transcode_limit: {
 			name: 'Set Transcode Limit',
 			description: 'Set the maximum concurrent transcodes',

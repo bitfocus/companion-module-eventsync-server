@@ -6,7 +6,8 @@ export interface StackInfo {
 	standbyIndex: number | null    // 1-indexed
 	nextCue: string | null         // Cue after standby
 	nextCueIndex: number | null    // 1-indexed
-	timeRemaining: number | null
+	videoTimeRemaining: number | null
+	waitTimeRemaining: number | null
 	playbackState: 'playing' | 'stopped' | 'paused'
 	cues: CueInfo[]
 }
