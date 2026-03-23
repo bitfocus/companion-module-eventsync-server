@@ -1,6 +1,6 @@
 {
-	"id": "eventsync",
-	"name": "eventsync",
+	"id": "eventsync-server",
+	"name": "eventsync-server",
 	"shortname": "EventSync",
 	"description": "Control EventSync from Bitfocus Companion. Trigger cues, manage modules, and monitor show status from Stream Deck.",
 	"version": "0.9.6",

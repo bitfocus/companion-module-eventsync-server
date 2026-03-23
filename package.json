@@ -1,5 +1,5 @@
 {
-  "name": "companion-module-eventsync",
+  "name": "companion-module-eventsync-server",
   "version": "0.9.6",
   "main": "dist/main.js",
   "type": "module",
