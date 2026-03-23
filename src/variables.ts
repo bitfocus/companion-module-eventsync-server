@@ -43,7 +43,7 @@ export function getVariables(state: EventSyncState): CompanionVariableDefinition
 			{ variableId: `${prefix}_video_time_s`, name: `${stack.name} Video Time Remaining (seconds)` },
 			{ variableId: `${prefix}_wait_time`, name: `${stack.name} Wait Time Remaining` },
 			{ variableId: `${prefix}_wait_time_s`, name: `${stack.name} Wait Time Remaining (seconds)` },
-			{ variableId: `${prefix}_playback_state`, name: `${stack.name} Playback State` }
+			{ variableId: `${prefix}_playback_state`, name: `${stack.name} Playback State` },
 		)
 	}
 

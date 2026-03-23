@@ -45,7 +45,7 @@ export class EventSyncModule extends InstanceBase<EventSyncConfig> {
 				config.port,
 				config.passcode,
 				(state) => this.onStateUpdate(state),
-				(status) => this.onStatusChange(status)
+				(status) => this.onStatusChange(status),
 			)
 			this.connection.connect()
 		} else {

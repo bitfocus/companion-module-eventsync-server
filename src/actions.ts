@@ -378,7 +378,7 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 				instance.getConnection()?.moduleDisable(String(action.options.module))
 			},
 		},
-			// ========== System Settings ==========
+		// ========== System Settings ==========
 		set_transcode_limit: {
 			name: 'Set Transcode Limit',
 			description: 'Set the maximum concurrent transcodes',

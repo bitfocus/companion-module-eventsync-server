@@ -15,7 +15,7 @@ export class EventSyncConnection {
 		private port: number,
 		private passcode: string,
 		private onState: StateCallback,
-		private onStatus: StatusCallback
+		private onStatus: StatusCallback,
 	) {}
 
 	connect(): void {
@@ -37,7 +37,9 @@ export class EventSyncConnection {
 
 			this.ws.on('message', (data: WebSocket.RawData) => {
 				try {
-					const message = JSON.parse(data.toString()) as ServerMessage
+					const text =
+						data instanceof ArrayBuffer ? Buffer.from(data).toString('utf-8') : data.toString('utf-8')
+					const message = JSON.parse(text) as ServerMessage
 					this.handleMessage(message)
 				} catch (e) {
 					console.error('Failed to parse message:', e)

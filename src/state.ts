@@ -1,11 +1,11 @@
 export interface StackInfo {
 	name: string
-	currentCue: string | null      // Last executed / running cue
+	currentCue: string | null // Last executed / running cue
 	currentCueIndex: number | null // 1-indexed
-	standbyCue: string | null      // Next cue to execute on GO
-	standbyIndex: number | null    // 1-indexed
-	nextCue: string | null         // Cue after standby
-	nextCueIndex: number | null    // 1-indexed
+	standbyCue: string | null // Next cue to execute on GO
+	standbyIndex: number | null // 1-indexed
+	nextCue: string | null // Cue after standby
+	nextCueIndex: number | null // 1-indexed
 	videoTimeRemaining: number | null
 	waitTimeRemaining: number | null
 	playbackState: 'playing' | 'stopped' | 'paused'

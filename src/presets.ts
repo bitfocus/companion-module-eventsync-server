@@ -729,8 +729,16 @@ export function getPresets(state: EventSyncState): CompanionPresetDefinitions {
 			},
 			steps: [],
 			feedbacks: [
-				{ feedbackId: 'stack_playing', options: { stack: name }, style: { bgcolor: combineRgb(0, 255, 0), color: combineRgb(0, 0, 0) } },
-				{ feedbackId: 'stack_paused', options: { stack: name }, style: { bgcolor: combineRgb(255, 165, 0), color: combineRgb(0, 0, 0) } },
+				{
+					feedbackId: 'stack_playing',
+					options: { stack: name },
+					style: { bgcolor: combineRgb(0, 255, 0), color: combineRgb(0, 0, 0) },
+				},
+				{
+					feedbackId: 'stack_paused',
+					options: { stack: name },
+					style: { bgcolor: combineRgb(255, 165, 0), color: combineRgb(0, 0, 0) },
+				},
 				{ feedbackId: 'stack_stopped', options: { stack: name }, style: { bgcolor: combineRgb(255, 0, 0) } },
 			],
 		}
