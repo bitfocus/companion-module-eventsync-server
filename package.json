@@ -28,11 +28,13 @@
   "homepage": "https://eventsync.co.uk",
   "dependencies": {
     "@companion-module/base": "~1.10.0",
-    "@types/ws": "^8.18.1",
     "ws": "^8.18.3"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@types/ws": "^8.18.1",
+    "eslint": "^8.50.0",
+    "prettier": "^3.0.0",
     "typescript": "~5.4.0"
   },
   "prettier": {

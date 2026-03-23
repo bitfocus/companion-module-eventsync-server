@@ -220,10 +220,6 @@ export class EventSyncConnection {
 	moduleDisable(module: string): void {
 		this.send({ type: 'moduleDisable', module })
 	}
-	modulePage(module: string, page: string): void {
-		this.send({ type: 'modulePage', module, page })
-	}
-
 	// System settings
 	setTranscodeLimit(count: number): void {
 		this.send({ type: 'setTranscodeLimit', count })
