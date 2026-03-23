@@ -3,7 +3,7 @@
 	"name": "eventsync",
 	"shortname": "EventSync",
 	"description": "Control EventSync from Bitfocus Companion. Trigger cues, manage modules, and monitor show status from Stream Deck.",
-	"version": "1.0.0",
+	"version": "0.9.6",
 	"license": "MIT",
 	"repository": "git+https://github.com/eventsync/companion-module-eventsync.git",
 	"bugs": "https://github.com/eventsync/companion-module-eventsync/issues",
