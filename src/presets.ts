@@ -577,9 +577,7 @@ export function getPresets(state: EventSyncState): CompanionPresetDefinitions {
 				bgcolor: combineRgb(0, 136, 0),
 			},
 			steps: [{ down: [{ actionId: 'stack_go', options: { stack: name } }], up: [] }],
-			feedbacks: [
-				{ feedbackId: 'stack_playing', options: { stack: name }, style: { bgcolor: combineRgb(0, 255, 0) } },
-			],
+			feedbacks: [{ feedbackId: 'stack_playing', options: { stack: name }, style: { bgcolor: combineRgb(0, 255, 0) } }],
 		}
 		presets[`stack_${key}_stop`] = {
 			type: 'button',
@@ -592,9 +590,7 @@ export function getPresets(state: EventSyncState): CompanionPresetDefinitions {
 				bgcolor: combineRgb(136, 0, 0),
 			},
 			steps: [{ down: [{ actionId: 'stack_stop', options: { stack: name } }], up: [] }],
-			feedbacks: [
-				{ feedbackId: 'stack_stopped', options: { stack: name }, style: { bgcolor: combineRgb(255, 0, 0) } },
-			],
+			feedbacks: [{ feedbackId: 'stack_stopped', options: { stack: name }, style: { bgcolor: combineRgb(255, 0, 0) } }],
 		}
 		presets[`stack_${key}_pause`] = {
 			type: 'button',

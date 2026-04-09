@@ -1,49 +1,56 @@
 {
-  "name": "companion-module-eventsync-server",
-  "version": "0.9.8",
-  "main": "dist/main.js",
-  "type": "module",
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "dev": "tsc -p tsconfig.json --watch",
-    "lint": "eslint .",
-    "format": "prettier --write src"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/eventsync/companion-module-eventsync.git"
-  },
-  "keywords": [
-    "bitfocus",
-    "companion",
-    "eventsync",
-    "show-control",
-    "osc"
-  ],
-  "author": "EventSync",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/eventsync/companion-module-eventsync/issues"
-  },
-  "homepage": "https://eventsync.co.uk",
-  "dependencies": {
-    "@companion-module/base": "~1.10.0",
-    "ws": "^8.18.3"
-  },
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "@types/ws": "^8.18.1",
-    "@companion-module/tools": "^2.6.1",
-    "eslint": "^9.39.2",
-    "typescript-eslint": "^8.51.0",
-    "prettier": "^3.0.0",
-    "typescript": "~5.4.0"
-  },
-  "prettier": {
-    "semi": false,
-    "singleQuote": true,
-    "printWidth": 120,
-    "useTabs": true,
-    "tabWidth": 4
-  }
+	"name": "companion-module-eventsync-server",
+	"version": "0.9.9",
+	"main": "dist/main.js",
+	"type": "module",
+	"scripts": {
+		"postinstall": "husky",
+		"format": "prettier -w .",
+		"package": "run build && companion-module-build",
+		"build": "rimraf dist && run build:main",
+		"build:main": "tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch",
+		"lint:raw": "eslint",
+		"lint": "run lint:raw ."
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bitfocus/companion-module-eventsync-server.git"
+	},
+	"author": "EventSync",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/bitfocus/companion-module-eventsync-server/issues"
+	},
+	"homepage": "https://eventsync.co.uk",
+	"engines": {
+		"node": "^22.20",
+		"yarn": "^4"
+	},
+	"dependencies": {
+		"@companion-module/base": "~1.14.1",
+		"ws": "^8.18.3"
+	},
+	"devDependencies": {
+		"@companion-module/tools": "^2.7.1",
+		"@types/node": "^22.19.3",
+		"@types/ws": "^8.18.1",
+		"eslint": "^9.39.2",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
+		"prettier": "^3.7.4",
+		"rimraf": "^6.1.2",
+		"typescript": "~5.9.3",
+		"typescript-eslint": "^8.51.0"
+	},
+	"prettier": "@companion-module/tools/.prettierrc.json",
+	"lint-staged": {
+		"*.{css,json,md,scss}": [
+			"prettier --write"
+		],
+		"*.{ts,tsx,js,jsx}": [
+			"yarn lint:raw --fix"
+		]
+	},
+	"packageManager": "yarn@4.12.0"
 }

@@ -10,18 +10,14 @@ import { EventSyncState } from './state.js'
 export class EventSyncModule extends InstanceBase<EventSyncConfig> {
 	private connection: EventSyncConnection | null = null
 	private state: EventSyncState = new EventSyncState()
-	private config: EventSyncConfig = { host: '', port: 8001, passcode: '' }
 	private isConnected: boolean = false
 
 	async init(config: EventSyncConfig): Promise<void> {
-		this.config = config
 		this.updateStatus(InstanceStatus.Disconnected)
 		await this.configUpdated(config)
 	}
 
 	async configUpdated(config: EventSyncConfig): Promise<void> {
-		this.config = config
-
 		// Close existing connection
 		this.connection?.disconnect()
 		this.connection = null
@@ -36,7 +32,7 @@ export class EventSyncModule extends InstanceBase<EventSyncConfig> {
 		this.setPresetDefinitions(getPresets(this.state))
 
 		// Initialize variable values
-		updateVariables(this, this.state)
+		updateVariables(this, this.state, this.isConnected)
 
 		// Connect if configured
 		if (config.host && config.port && config.passcode) {
@@ -57,18 +53,17 @@ export class EventSyncModule extends InstanceBase<EventSyncConfig> {
 		this.updateStatus(status)
 		this.isConnected = status === InstanceStatus.Ok
 
-		// When disconnected, update server status and refresh UI
+		// When disconnected, refresh UI so connection_status variable + feedbacks reflect it.
+		// The server-reported state.serverStatus is left untouched so it preserves the
+		// last value the server published (e.g. 'degraded', 'maintenance').
 		if (!this.isConnected) {
-			this.state.serverStatus = 'offline'
-			updateVariables(this, this.state)
+			updateVariables(this, this.state, this.isConnected)
 			this.checkFeedbacks()
 		}
 	}
 
 	private onStateUpdate(newState: EventSyncState): void {
 		const previousStackCount = this.state.stacks.length
-		// Override server-reported status with actual connection state
-		newState.serverStatus = this.isConnected ? 'online' : 'offline'
 		this.state = newState
 
 		// Only rebuild definitions if stack/module count changed (avoids UI flicker)
@@ -80,7 +75,7 @@ export class EventSyncModule extends InstanceBase<EventSyncConfig> {
 		}
 
 		// Update variable values
-		updateVariables(this, this.state)
+		updateVariables(this, this.state, this.isConnected)
 
 		// Trigger feedback checks
 		this.checkFeedbacks()
