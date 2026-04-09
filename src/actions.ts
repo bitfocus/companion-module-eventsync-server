@@ -7,6 +7,23 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 	const contentOSCChoices: DropdownChoice[] = state.getContentOSCChoices()
 	const moduleChoices: DropdownChoice[] = state.getModuleChoices()
 
+	// Resolve a dropdown option against the current choices. If the value is missing
+	// or no longer present (e.g. configured before any state was received from the
+	// server, or stack was deleted), log a warning and return null so the caller
+	// can skip the send.
+	const resolveChoice = (label: string, value: unknown, choices: DropdownChoice[]): string | null => {
+		const stringValue = typeof value === 'string' || typeof value === 'number' ? String(value) : ''
+		if (!stringValue) {
+			instance.log('warn', `${label} action has no ${label.toLowerCase()} selected; ignoring`)
+			return null
+		}
+		if (!choices.some((c) => String(c.id) === stringValue)) {
+			instance.log('warn', `${label} "${stringValue}" is not currently known to the server; ignoring action`)
+			return null
+		}
+		return stringValue
+	}
+
 	return {
 		// ========== Global Cue Control ==========
 		global_go: {
@@ -88,8 +105,9 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 				},
 			],
 			callback: async (action: CompanionActionEvent) => {
-				const id = Number(action.options.id)
-				instance.getConnection()?.globalFireContentOSC(id)
+				const resolved = resolveChoice('Cue', action.options.id, contentOSCChoices)
+				if (resolved === null) return
+				instance.getConnection()?.globalFireContentOSC(Number(resolved))
 			},
 		},
 		global_fire_contentosc_manual: {
@@ -125,7 +143,9 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 				},
 			],
 			callback: async (action: CompanionActionEvent) => {
-				instance.getConnection()?.stackGo(String(action.options.stack))
+				const stack = resolveChoice('Stack', action.options.stack, stackChoices)
+				if (stack === null) return
+				instance.getConnection()?.stackGo(stack)
 			},
 		},
 		stack_stop: {
@@ -141,7 +161,9 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 				},
 			],
 			callback: async (action: CompanionActionEvent) => {
-				instance.getConnection()?.stackStop(String(action.options.stack))
+				const stack = resolveChoice('Stack', action.options.stack, stackChoices)
+				if (stack === null) return
+				instance.getConnection()?.stackStop(stack)
 			},
 		},
 		stack_pause: {
@@ -157,7 +179,9 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 				},
 			],
 			callback: async (action: CompanionActionEvent) => {
-				instance.getConnection()?.stackPause(String(action.options.stack))
+				const stack = resolveChoice('Stack', action.options.stack, stackChoices)
+				if (stack === null) return
+				instance.getConnection()?.stackPause(stack)
 			},
 		},
 		stack_resume: {
@@ -173,7 +197,9 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 				},
 			],
 			callback: async (action: CompanionActionEvent) => {
-				instance.getConnection()?.stackResume(String(action.options.stack))
+				const stack = resolveChoice('Stack', action.options.stack, stackChoices)
+				if (stack === null) return
+				instance.getConnection()?.stackResume(stack)
 			},
 		},
 		stack_next: {
@@ -189,7 +215,9 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 				},
 			],
 			callback: async (action: CompanionActionEvent) => {
-				instance.getConnection()?.stackNext(String(action.options.stack))
+				const stack = resolveChoice('Stack', action.options.stack, stackChoices)
+				if (stack === null) return
+				instance.getConnection()?.stackNext(stack)
 			},
 		},
 		stack_previous: {
@@ -205,7 +233,9 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 				},
 			],
 			callback: async (action: CompanionActionEvent) => {
-				instance.getConnection()?.stackPrevious(String(action.options.stack))
+				const stack = resolveChoice('Stack', action.options.stack, stackChoices)
+				if (stack === null) return
+				instance.getConnection()?.stackPrevious(stack)
 			},
 		},
 		stack_fire: {
@@ -229,7 +259,8 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 				},
 			],
 			callback: async (action: CompanionActionEvent) => {
-				const stack = String(action.options.stack)
+				const stack = resolveChoice('Stack', action.options.stack, stackChoices)
+				if (stack === null) return
 				const position = Number(action.options.position)
 				instance.getConnection()?.stackFire(stack, position)
 			},
@@ -317,7 +348,9 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 				},
 			],
 			callback: async (action: CompanionActionEvent) => {
-				instance.getConnection()?.lockTransport(String(action.options.stack))
+				const stack = resolveChoice('Stack', action.options.stack, stackChoices)
+				if (stack === null) return
+				instance.getConnection()?.lockTransport(stack)
 			},
 		},
 		unlock_transport: {
@@ -341,7 +374,9 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 				},
 			],
 			callback: async (action: CompanionActionEvent) => {
-				instance.getConnection()?.selectStack(String(action.options.stack))
+				const stack = resolveChoice('Stack', action.options.stack, stackChoices)
+				if (stack === null) return
+				instance.getConnection()?.selectStack(stack)
 			},
 		},
 
@@ -359,7 +394,9 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 				},
 			],
 			callback: async (action: CompanionActionEvent) => {
-				instance.getConnection()?.moduleEnable(String(action.options.module))
+				const module = resolveChoice('Module', action.options.module, moduleChoices)
+				if (module === null) return
+				instance.getConnection()?.moduleEnable(module)
 			},
 		},
 		module_disable: {
@@ -375,7 +412,9 @@ export function getActions(instance: EventSyncModule, state: EventSyncState): Co
 				},
 			],
 			callback: async (action: CompanionActionEvent) => {
-				instance.getConnection()?.moduleDisable(String(action.options.module))
+				const module = resolveChoice('Module', action.options.module, moduleChoices)
+				if (module === null) return
+				instance.getConnection()?.moduleDisable(module)
 			},
 		},
 		// ========== System Settings ==========

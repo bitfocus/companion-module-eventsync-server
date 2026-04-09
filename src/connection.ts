@@ -5,10 +5,14 @@ import { EventSyncState, ServerMessage, StateUpdateMessage } from './state.js'
 type StateCallback = (state: EventSyncState) => void
 type StatusCallback = (status: InstanceStatus) => void
 
+const CONNECT_TIMEOUT_MS = 10000
+
 export class EventSyncConnection {
 	private ws: WebSocket | null = null
 	private reconnectTimer: ReturnType<typeof setTimeout> | null = null
 	private pingInterval: ReturnType<typeof setInterval> | null = null
+	private connectTimeout: ReturnType<typeof setTimeout> | null = null
+	private shouldReconnect: boolean = true
 
 	constructor(
 		private host: string,
@@ -19,15 +23,26 @@ export class EventSyncConnection {
 	) {}
 
 	connect(): void {
+		this.shouldReconnect = true
 		this.onStatus(InstanceStatus.Connecting)
 
 		const url = `ws://${this.host}:${this.port}/control`
 		console.log(`EventSync: Connecting to ${url}`)
 
 		try {
-			this.ws = new WebSocket(url)
+			const ws = new WebSocket(url)
+			this.ws = ws
 
-			this.ws.on('open', () => {
+			this.connectTimeout = setTimeout(() => {
+				if (ws.readyState === WebSocket.CONNECTING) {
+					console.error(`EventSync: Connection attempt timed out after ${CONNECT_TIMEOUT_MS}ms`)
+					this.onStatus(InstanceStatus.ConnectionFailure)
+					ws.terminate()
+				}
+			}, CONNECT_TIMEOUT_MS)
+
+			ws.on('open', () => {
+				this.clearConnectTimeout()
 				console.log('EventSync: WebSocket connected, sending authentication')
 				// Send authentication
 				this.send({ type: 'authenticate', passcode: this.passcode })
@@ -35,10 +50,9 @@ export class EventSyncConnection {
 				this.startPing()
 			})
 
-			this.ws.on('message', (data: WebSocket.RawData) => {
+			ws.on('message', (data: WebSocket.RawData) => {
 				try {
-					const text =
-						data instanceof ArrayBuffer ? Buffer.from(data).toString('utf-8') : data.toString('utf-8')
+					const text = data instanceof ArrayBuffer ? Buffer.from(data).toString('utf-8') : data.toString('utf-8')
 					const message = JSON.parse(text) as ServerMessage
 					this.handleMessage(message)
 				} catch (e) {
@@ -46,14 +60,15 @@ export class EventSyncConnection {
 				}
 			})
 
-			this.ws.on('close', () => {
+			ws.on('close', () => {
 				console.log('EventSync: WebSocket closed')
+				this.clearConnectTimeout()
 				this.onStatus(InstanceStatus.Disconnected)
 				this.stopPing()
 				this.scheduleReconnect()
 			})
 
-			this.ws.on('error', (err: Error) => {
+			ws.on('error', (err: Error) => {
 				console.error('EventSync: WebSocket error:', err.message)
 				this.onStatus(InstanceStatus.ConnectionFailure)
 			})
@@ -64,19 +79,33 @@ export class EventSyncConnection {
 		}
 	}
 
-	disconnect(): void {
+	private clearConnectTimeout(): void {
+		if (this.connectTimeout) {
+			clearTimeout(this.connectTimeout)
+			this.connectTimeout = null
+		}
+	}
+
+	disconnect(permanent: boolean = false): void {
+		if (permanent) this.shouldReconnect = false
 		if (this.reconnectTimer) {
 			clearTimeout(this.reconnectTimer)
 			this.reconnectTimer = null
 		}
+		this.clearConnectTimeout()
 		this.stopPing()
-		this.ws?.close()
+		if (this.ws) {
+			this.ws.removeAllListeners()
+			this.ws.close()
+		}
 		this.ws = null
 	}
 
 	send(message: object): void {
 		if (this.ws?.readyState === WebSocket.OPEN) {
 			this.ws.send(JSON.stringify(message))
+		} else {
+			console.warn('EventSync: send() called while socket is not open; message dropped:', message)
 		}
 	}
 
@@ -88,7 +117,7 @@ export class EventSyncConnection {
 
 			case 'authFailed':
 				this.onStatus(InstanceStatus.BadConfig)
-				this.disconnect()
+				this.disconnect(true)
 				break
 
 			case 'stateUpdate': {
@@ -105,7 +134,7 @@ export class EventSyncConnection {
 	}
 
 	private scheduleReconnect(): void {
-		if (this.reconnectTimer) return
+		if (!this.shouldReconnect || this.reconnectTimer) return
 
 		this.reconnectTimer = setTimeout(() => {
 			this.reconnectTimer = null
@@ -114,6 +143,7 @@ export class EventSyncConnection {
 	}
 
 	private startPing(): void {
+		if (this.pingInterval) return
 		this.pingInterval = setInterval(() => {
 			this.send({ type: 'ping' })
 		}, 30000)

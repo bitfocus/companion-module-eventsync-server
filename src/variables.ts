@@ -28,6 +28,7 @@ export function getVariables(state: EventSyncState): CompanionVariableDefinition
 		{ variableId: 'connected_devices', name: 'Connected Devices' },
 		{ variableId: 'transcode_queue', name: 'Transcode Queue' },
 		{ variableId: 'server_status', name: 'Server Status' },
+		{ variableId: 'connection_status', name: 'Connection Status' },
 	]
 
 	// Per-stack variables
@@ -50,7 +51,11 @@ export function getVariables(state: EventSyncState): CompanionVariableDefinition
 	return variables
 }
 
-export function updateVariables(instance: InstanceBase<EventSyncConfig>, state: EventSyncState): void {
+export function updateVariables(
+	instance: InstanceBase<EventSyncConfig>,
+	state: EventSyncState,
+	isConnected: boolean,
+): void {
 	// Get the focused stack (locked target takes priority, then focused, then first stack)
 	const focusedStackName = state.transportTarget || state.focusedStack || state.stacks[0]?.name || null
 	const focusedStack = focusedStackName ? state.stacks.find((s) => s.name === focusedStackName) : null
@@ -80,6 +85,7 @@ export function updateVariables(instance: InstanceBase<EventSyncConfig>, state: 
 		connected_devices: state.connectedDevices,
 		transcode_queue: state.transcodeQueue,
 		server_status: state.serverStatus,
+		connection_status: isConnected ? 'connected' : 'disconnected',
 	}
 
 	// Per-stack variables
